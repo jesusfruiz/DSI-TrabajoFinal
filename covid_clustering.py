@@ -8,6 +8,34 @@ Created on Wed May 27 19:00:23 2020
 import pandas as pd
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+import statistics
+import math
+from sklearn.cluster import KMeans
+from sklearn.decomposition import PCA
+
+def bic(K, cidx, X):
+    k = 0
+    P = len(X.iloc[1,:])
+    N = len(X)
+    sigma_j = dict()
+    xi = []
+    while k < K:
+        suma = 0
+        group_k = list(filter(lambda x: cidx[x] == k, range(len(cidx))))
+        sigma = dict()
+        sigma_j[k] = dict()
+        j = 0
+        while j < P:    
+            sigma[j] = statistics.stdev(X.iloc[:,1])**2
+            if len(group_k) < 2:
+                sigma_j[k][j] = 0
+            else:                
+                sigma_j[k][j] = statistics.stdev(X.iloc[group_k,1])**2
+            suma = suma + 0.5 * math.log(sigma[j] + sigma_j[k][j])    
+            j+=1
+        xi.append(-1 * len(group_k) * suma)
+        k+=1
+    return -2*sum(xi)+2*K*P*math.log(N) 
 
 covid_df = pd.read_csv("covid_19_clean_complete.csv")
 covid_df = covid_df.loc[covid_df['Date'] == '5/25/20']
@@ -31,7 +59,6 @@ threedee.set_ylabel('Deaths')
 threedee.set_zlabel('Recovered')
 plt.show()
 
-
 plt.scatter(covid_df['Confirmed'], covid_df['Deaths'])
 plt.plot()
 plt.xlim(0, 0.016)
@@ -40,6 +67,63 @@ plt.xlabel('Confirmed')
 plt.ylabel('Deaths')
 plt.show()
 
+#2.1 Calculo número ideal de clusters
+K=2
+BIC = []
+
+while K <= 10:
+    kmeans = KMeans(n_clusters=K, init='random', n_init=20)
+    kmeans.fit(covid_df.drop(['Country/Region'], axis=1))
+    BIC.append(bic(K, kmeans.labels_, covid_df))
+    K += 1
+
+X = list(range(2, 11))
+
+plt.scatter(X, BIC)
+plt.plot()
+plt.show()
+
+K = 3
+
+#2.2 Detección y Eliminación de Outliers: Jackknife
+data = covid_df.drop(['Country/Region'], axis=1)
+kmeans = KMeans(n_clusters=K, init='random', n_init=40)
+SSE = dict()
+for i in range(len(data)):
+    data_aux = data.drop(i)
+    kmeans.fit(data_aux)
+    SSE[i] = kmeans.inertia_
+
+sigma=statistics.stdev(SSE.values())
+mu=statistics.mean(SSE.values())
+umbral=2;
+
+outliers = []
+for i in range(len(covid_df)):
+    if abs(SSE[i]-mu)>umbral*sigma:
+        outliers.append(i);
+
+estimator = PCA (n_components = 2)
+X_pca = estimator.fit_transform(data)
+print(estimator.explained_variance_ratio_) 
+
+for i in range(len(X_pca)):
+    if i in outliers:
+        col = 'k'
+    else:
+        col = 'w'
+        
+    plt.plot(X_pca[i, 0], X_pca[i, 1], 'o', markerfacecolor=col,
+             markeredgecolor='k', markersize=5)
+plt.scatter(X_pca[:,0], X_pca[:,1])
+plt.show()
+
+print("Los outliers son:")
+for i in outliers:
+    print(i)
+    print(covid_df.iloc[i,:])
+    print("")
+#    data = covid_df.drop(i) #Remove the outlier from data
 
 
 
