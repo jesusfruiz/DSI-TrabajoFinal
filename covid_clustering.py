@@ -103,27 +103,41 @@ for i in range(len(covid_df)):
     if abs(SSE[i]-mu)>umbral*sigma:
         outliers.append(i);
 
-estimator = PCA (n_components = 2)
-X_pca = estimator.fit_transform(data)
-print(estimator.explained_variance_ratio_) 
+#estimator = PCA (n_components = 2)
+#X_pca = estimator.fit_transform(data)
+#print(estimator.explained_variance_ratio_) 
+X_pca = covid_df.drop(["Deaths"], axis = 1)
 
 for i in range(len(X_pca)):
     if i in outliers:
-        col = 'k'
+        col = 'r'
     else:
         col = 'w'
         
-    plt.plot(X_pca[i, 0], X_pca[i, 1], 'o', markerfacecolor=col,
-             markeredgecolor='k', markersize=5)
-plt.scatter(X_pca[:,0], X_pca[:,1])
+    plt.plot(X_pca.iloc[i, 0], X_pca.iloc[i, 1], 'o', markerfacecolor=col,
+             markeredgecolor='k', markersize=6)
+plt.scatter(X_pca.iloc[:,0], X_pca.iloc[:,1])
 plt.show()
 
+outlier = []
 print("Los outliers son:")
 for i in outliers:
     print(i)
     print(covid_df.iloc[i,:])
     print("")
-#    data = covid_df.drop(i) #Remove the outlier from data
+    outlier.append(covid_df.iloc[i,:])
+    covid_df = covid_df.drop(i) #Remove the outlier from data
+    
+threedee = plt.figure().gca(projection='3d')
+threedee.scatter(covid_df['Confirmed'], covid_df['Deaths'], covid_df['Recovered'])
+threedee.set_xlabel('Confirmed')
+threedee.set_ylabel('Deaths')
+threedee.set_zlabel('Recovered')
+plt.show()
+    
+
+    
+
 
 
 
