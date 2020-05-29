@@ -12,6 +12,7 @@ import statistics
 import math
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
+from sklearn.mixture import GaussianMixture
 
 def bic(K, cidx, X):
     k = 0
@@ -130,6 +131,20 @@ for i in outliers:
     
 threedee = plt.figure().gca(projection='3d')
 threedee.scatter(covid_df['Confirmed'], covid_df['Deaths'], covid_df['Recovered'])
+threedee.set_xlabel('Confirmed')
+threedee.set_ylabel('Deaths')
+threedee.set_zlabel('Recovered')
+plt.show()
+
+gm = GaussianMixture(n_components=K, max_iter=100, tol=0.00001)
+
+gm.fit(covid_df.drop(['Country/Region'], axis=1))
+labels = gm.predict(covid_df.drop(['Country/Region'], axis=1))
+
+#plt.scatter(X[:, 0], X[:, 1], c=labels, s=40, cmap='viridis');
+
+threedee = plt.figure().gca(projection='3d')
+threedee.scatter(covid_df['Confirmed'], covid_df['Deaths'], covid_df['Recovered'], c=labels, cmap='viridis')
 threedee.set_xlabel('Confirmed')
 threedee.set_ylabel('Deaths')
 threedee.set_zlabel('Recovered')
