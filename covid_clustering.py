@@ -143,7 +143,7 @@ for i in outliers:
 plot_3d(covid_df['Confirmed'], covid_df['Deaths'], covid_df['Recovered'])
 
 # 6. Perform Clustering
-gm = GaussianMixture(n_components=K, max_iter=100, tol=0.000001)
+gm = GaussianMixture(n_components=K, max_iter=100, tol=0.000001, covariance_type='spherical')
 
 gm.fit(covid_df.drop(['Country/Region'], axis=1))
 labels = gm.predict(covid_df.drop(['Country/Region'], axis=1))
@@ -156,6 +156,7 @@ plot_3d(covid_df['Confirmed'], covid_df['Deaths'], covid_df['Recovered'], labels
 covid_df['labels'] = labels
 
 groups = {}
+representatives = {}
 
 for i in range(K):
     groups[i] = covid_df.loc[covid_df['labels'] == i]
@@ -163,6 +164,7 @@ for i in range(K):
 for i in range(K):
     print(f"Group {i}:")
     print(groups[i].mean())
+    representatives[i] = groups[i].mean()
 
 
 
