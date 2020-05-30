@@ -148,7 +148,7 @@ plt.show()
 #threedee.set_zlabel('Recovered')
 #plt.show()
 
-gm = GaussianMixture(n_components=K, max_iter=100, tol=0.00001)
+gm = GaussianMixture(n_components=K, max_iter=100, tol=0.00001, covariance_type='spherical')
 
 gm.fit(df_2d.drop(['Country/Region'], axis=1))
 labels = gm.predict(df_2d.drop(['Country/Region'], axis=1))
@@ -174,6 +174,21 @@ for k, col in zip(unique_labels, colors):
     plt.plot(xy.iloc[:, 1], xy.iloc[:, 2], 'o', markerfacecolor=col, markeredgecolor='k')
 
 plt.show()
+
+# 7. Analysis Data
+
+df_2d['labels'] = labels
+
+groups = {}
+representatives = {}
+
+for i in range(K):
+    groups[i] = df_2d.loc[df_2d['labels'] == i]
+
+for i in range(K):
+    print(f"Group {i}:")
+    print(groups[i].mean())
+    representatives[i] = groups[i].mean()
 
 #plt.scatter(X[:, 0], X[:, 1], c=labels, s=40, cmap='viridis');
 

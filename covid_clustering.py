@@ -105,16 +105,14 @@ sigma=statistics.stdev(SSE.values())
 mu=statistics.mean(SSE.values())
 umbral=2;
 
-outliers = []
+outliers_index = []
 for i in range(len(covid_df)):
     if abs(SSE[i]-mu)>umbral*sigma:
-        outliers.append(i);
-
-X_pca = covid_df.drop(["Recovered"], axis = 1)
+        outliers_index.append(i);
 
 out_label = []
 for i in range(len(X_pca)):
-    if i in outliers:
+    if i in outliers_index:
         col = 'r'
         out_label.append(1)
     else:
@@ -123,14 +121,15 @@ for i in range(len(X_pca)):
         
 plot_3d(covid_df['Confirmed'], covid_df['Deaths'], covid_df['Recovered'], labels=out_label, cmap='brg')
 
-outlier = []
+outliers = []
 print("Los outliers son:")
-for i in outliers:
+for i in outliers_index:
     print(i)
     print(covid_df.iloc[i,:])
     print("")
-    outlier.append(covid_df.iloc[i,:])
-    covid_df = covid_df.drop(i) #Remove the outlier from data
+    outliers.append(covid_df.iloc[i,:])
+    
+covid_df = covid_df.drop(outliers_index) #Remove the outlier from data
     
 # print data without outlier
 plot_3d(covid_df['Confirmed'], covid_df['Deaths'], covid_df['Recovered'])
@@ -145,7 +144,6 @@ labels = gm.predict(covid_df.drop(['Country/Region'], axis=1))
 plot_3d(covid_df['Confirmed'], covid_df['Deaths'], covid_df['Recovered'], labels=labels, cmap='brg')
 
 # 7. Analysis Data
-
 covid_df['labels'] = labels
 
 groups = {}
