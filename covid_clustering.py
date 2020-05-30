@@ -110,9 +110,6 @@ for i in range(len(covid_df)):
     if abs(SSE[i]-mu)>umbral*sigma:
         outliers.append(i);
 
-#estimator = PCA (n_components = 2)
-#X_pca = estimator.fit_transform(data)
-#print(estimator.explained_variance_ratio_) 
 X_pca = covid_df.drop(["Recovered"], axis = 1)
 
 out_label = []
@@ -125,10 +122,6 @@ for i in range(len(X_pca)):
         out_label .append(2)
         
 plot_3d(covid_df['Confirmed'], covid_df['Deaths'], covid_df['Recovered'], labels=out_label, cmap='brg')
-#    plt.plot(X_pca.iloc[i, 0], X_pca.iloc[i, 1], 'o', markerfacecolor=col,
-#             markeredgecolor='k', markersize=6)
-#plt.scatter(X_pca.iloc[:,0], X_pca.iloc[:,1])
-#plt.show()
 
 outlier = []
 print("Los outliers son:")
