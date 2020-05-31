@@ -41,7 +41,7 @@ def bic(K, cidx, X):
 
 def plot_3d(x, y, z, labels=None, cmap=None):
     threedee = plt.figure().gca(projection='3d')
-    threedee.scatter(x, y, z, c=labels, cmap=None)
+    threedee.scatter(x, y, z, c=labels, cmap=cmap)
     threedee.set_xlabel('Confirmed')
     threedee.set_ylabel('Deaths')
     threedee.set_zlabel('Recovered')
@@ -111,7 +111,7 @@ for i in range(len(covid_df)):
         outliers_index.append(i);
 
 out_label = []
-for i in range(len(X_pca)):
+for i in range(len(covid_df)):
     if i in outliers_index:
         col = 'r'
         out_label.append(1)
