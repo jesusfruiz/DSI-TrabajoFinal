@@ -13,6 +13,7 @@ import math
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 from sklearn.mixture import GaussianMixture
+import numpy as np
 
 # 1. Auxiliar Methods
 def bic(K, cidx, X):
@@ -46,7 +47,40 @@ def plot_3d(x, y, z, labels=None, cmap=None):
     threedee.set_ylabel('Deaths')
     threedee.set_zlabel('Recovered')
     plt.show()    
+
+def autolabel(rects):
+    """Attach a text label above each bar in *rects*, displaying its height."""
+    for rect in rects:
+        height = rect.get_height()
+        ax.annotate('{}'.format(height),
+                    xy=(rect.get_x() + rect.get_width() / 2, height),
+                    xytext=(0, 3),  # 3 points vertical offset
+                    textcoords="offset points",
+                    ha='center', va='bottom')
+
+def plotDataByGroupRate(labels, confirmed, deaths, recovered):
+    x = np.arange(len(labels))  # the label locations
+    width = 0.33  # the width of the bars
     
+    fig, ax = plt.subplots()
+    rects1 = ax.bar(x, confirmed, width, label='Confirmed')
+    rects3 = ax.bar(x, recovered, width, label='Recovered')
+    rects2 = ax.bar(x, deaths, width, label='Deaths')
+    
+    # Add some text for labels, title and custom x-axis tick labels, etc.
+    ax.set_ylabel('People')
+    ax.set_title('Confirmed, deaths and recovered people by group')
+    ax.set_xticks(x)
+    ax.set_xticklabels(labels)
+    ax.legend()
+        
+    autolabel(rects1)
+    autolabel(rects2)
+    
+    fig.tight_layout()
+    
+    plt.show()
+
 
 # 2. Data reading and preprocessing
 covid_df = pd.read_csv("covid_19_clean_complete.csv")
@@ -157,5 +191,20 @@ for i in range(K):
     print(groups[i].mean())
     representatives[i] = groups[i].mean()
 
+
+
+
+# plot groups data graphs (deaths and revoeries rate by group)
+
+labels = ['G0', 'G1', 'G2']
+confirmed = [100, 100, 100]
+deaths = [groups[0].mean()['Deaths']/groups[0].mean()['Confirmed']*100, 
+          groups[1].mean()['Deaths']/groups[1].mean()['Confirmed']*100, 
+          groups[2].mean()['Deaths']/groups[2].mean()['Confirmed']*100]
+recovered = [groups[0].mean()['Recovered']/groups[0].mean()['Confirmed']*100, 
+             groups[1].mean()['Recovered']/groups[1].mean()['Confirmed']*100, 
+             groups[2].mean()['Recovered']/groups[2].mean()['Confirmed']*100]
+
+plotDataByGroupRate(labels, confirmed, deaths, recovered)
 
 
