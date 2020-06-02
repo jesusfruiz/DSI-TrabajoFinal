@@ -48,11 +48,11 @@ def plot_3d(x, y, z, labels=None, cmap=None):
     threedee.set_zlabel('Recovered')
     plt.show()    
 
-def autolabel(rects):
+def autolabel(rects, ax):
     """Attach a text label above each bar in *rects*, displaying its height."""
     for rect in rects:
         height = rect.get_height()
-        ax.annotate('{}'.format(height),
+        ax.annotate('{}'.format(round(height,3)),
                     xy=(rect.get_x() + rect.get_width() / 2, height),
                     xytext=(0, 3),  # 3 points vertical offset
                     textcoords="offset points",
@@ -63,6 +63,7 @@ def plotDataByGroupRate(labels, confirmed, deaths, recovered):
     width = 0.33  # the width of the bars
     
     fig, ax = plt.subplots()
+    
     rects1 = ax.bar(x, confirmed, width, label='Confirmed')
     rects3 = ax.bar(x, recovered, width, label='Recovered')
     rects2 = ax.bar(x, deaths, width, label='Deaths')
@@ -74,8 +75,9 @@ def plotDataByGroupRate(labels, confirmed, deaths, recovered):
     ax.set_xticklabels(labels)
     ax.legend()
         
-    autolabel(rects1)
-    autolabel(rects2)
+    autolabel(rects1, ax)
+    autolabel(rects2, ax)
+    autolabel(rects3, ax)
     
     fig.tight_layout()
     
