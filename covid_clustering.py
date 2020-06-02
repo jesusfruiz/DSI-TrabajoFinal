@@ -64,7 +64,7 @@ def plotDataByGroupRate(labels, confirmed, deaths, recovered):
     
     fig, ax = plt.subplots()
     
-    rects1 = ax.bar(x, confirmed, width, label='Confirmed')
+    rects1 = ax.bar(x, confirmed, width, label='Actice Cases')
     rects3 = ax.bar(x, recovered, width, label='Recovered')
     rects2 = ax.bar(x, deaths, width, label='Deaths')
     
@@ -176,7 +176,6 @@ gm = GaussianMixture(n_components=K, max_iter=100, tol=0.000001, covariance_type
 gm.fit(covid_df.drop(['Country/Region'], axis=1))
 labels = gm.predict(covid_df.drop(['Country/Region'], axis=1))
 
-
 plot_3d(covid_df['Confirmed'], covid_df['Deaths'], covid_df['Recovered'], labels=labels, cmap='brg')
 
 # 7. Analysis Data
@@ -192,8 +191,6 @@ for i in range(K):
     print(f"Group {i}:")
     print(groups[i].mean())
     representatives[i] = groups[i].mean()
-
-
 
 
 # plot groups data graphs (deaths and revoeries rate by group)
